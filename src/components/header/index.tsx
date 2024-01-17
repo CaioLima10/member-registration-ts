@@ -1,22 +1,23 @@
 "use client"
 import Link from "next/link";
-import {FiLoader, FiLogOut, FiUser} from "react-icons/fi"
-import { FaLock } from "react-icons/fa";
+import { FiLoader, FiLock, FiLogOut, FiUser} from "react-icons/fi"
 import { signIn , signOut , useSession } from "next-auth/react";
 
 export default function Header() {
 
   const { status, data } = useSession()
 
-  const handleSignIn = async () => { 
-    await signIn() 
+  console.log(data)
+
+  const handleLogin = async () => {
+    await signIn()
   }
-  const handleSignOut = async () => {
+  const handleLogout = async () => {
     await signOut()
   }
 
   return (
-    <header className="w-full flex items-center px-8 h-20 py-4 bg-gray-950 text-gray-100">
+    <header className="w-full flex items-center px-4 h-20 py-4 bg-gray-950 text-gray-100">
       <div className="w-full flex items-center justify-between">
         <Link href="/">
           <h1 className="font-bold text-1xl hover:tracking-wider duration-300">
@@ -25,24 +26,33 @@ export default function Header() {
           </h1>
         </Link>
 
-   
+        { status === "loading" && (
+          <button className="animate-spin">
+            <FiLoader size={22}/>
+          </button>
+        ) }
 
-          { status === "unauthenticated" && (
-            <button onClick={handleSignIn}>
-              <FaLock size={22}/>
+        { status === "unauthenticated" && (
+          <button onClick={handleLogin}>
+            <FiLock size={22}/>
+          </button>
+        ) }
+
+        { status === "authenticated" && (
+          <div className="flex items-center gap-4">
+            <Link href="/dashboard">
+              <FiUser size={22}/>
+            </Link>
+            <button className="text-red-500" onClick={handleLogout}>
+              <FiLogOut size={22}/>
             </button>
-          ) }
-
-          { status === "authenticated" && (
-            <div className="flex items-center gap-4">
-              <Link href="/">
-                <FiUser size={22}/>
-              </Link>
-              <button onClick={handleSignOut}>
-                <FiLogOut size={22}/>
-              </button>
+            <div className="flex  items-center gap-3">
+              <p>{data.user.name}</p>
+              <img className="w-6 rounded-full" src={data.user?.image} alt="top"/>
             </div>
-          )}
+          </div>
+        )}
+
       </div>
     </header>
   )

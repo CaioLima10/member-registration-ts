@@ -50,13 +50,12 @@ export default async function Dashboard() {
             { members.map((item) => (
             <ListMembers 
               key={item.id}
-              memberCard={item.customer ? item.customer : null}
+              memberCard={item.customer}
               memberTicket={item}
             />
             )) }
           </tbody>
         </table>
-
       </main>
     </Container>
   )

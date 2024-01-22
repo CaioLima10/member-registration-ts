@@ -1,19 +1,27 @@
 
+import { ICardMembersProps } from "@/utils/member.type";
+import { IMemberTicket } from "@/utils/memberTicket.type";
 import { FiFile, FiTrash2 } from "react-icons/fi";
 
-export default function ListMembers() {
+interface IListMemberProps {
+  memberTicket: IMemberTicket 
+  memberCard: ICardMembersProps | null
+}
+
+
+export default function ListMembers({ memberCard, memberTicket }: IListMemberProps) {
 
   return (
     
     <tr className="border-b-2 border-b-gray-400 h-16 last:border-b-0 mb-5 hover:bg-gray-200"> 
         <td className="text-left pl-0 sm:pl-1">
-          Caio lima
+          { memberCard?.name }
         </td>
         <td className="text-left  sm:items-center">
-          14/09/1997
+          {memberTicket.created_at ? memberTicket.created_at.toLocaleDateString("pt-br") : ''}
         </td>
         <td className="text-left text-green-500">
-          ATIVO  
+          { memberTicket.status  } 
         </td>
         <td className="text-right">
           <button>

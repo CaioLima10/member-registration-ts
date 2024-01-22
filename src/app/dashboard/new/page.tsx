@@ -1,5 +1,6 @@
 import Container from "@/components/container";
 import { authOptions } from "@/lib/auth";
+import prisma from "@/lib/prisma";
 import prismaClient from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
@@ -19,6 +20,28 @@ export default async function NewTicket() {
     }
   })
 
+  const handleRegisterForm = async (formData: FormData) => {
+    "use server"
+
+    const name = formData.get("name")
+    const description = formData.get("description")
+    const customerId = formData.get("customerId")
+
+    if(!name || !description || !customerId) return
+
+    await prisma.member.create({
+      data:{
+        name: name as string,
+        description: description as string,
+        customerId: customerId as string,
+        status: 'ABERTO',
+        userId: session.user.id
+      }
+    })
+    redirect("/dashboard")
+
+  }
+
   return (
     <Container>
       <main className="w-full">
@@ -30,11 +53,12 @@ export default async function NewTicket() {
           <h1 className="text-2xl font-bold mt-2">Novo chamado</h1> 
         </div>
           
-          <form className="w-full flex flex-col mt-6">
+          <form className="w-full flex flex-col mt-6" action={handleRegisterForm}>
             <label className="mb-1 font-medium text-lg">Nome do chamado</label>
             <input
               className="w-full border-2 rounded-md px-2 mb-2 h-11" 
               type="text"
+              name="name"
               placeholder="Nome do chamado..."
               required
             />
@@ -42,39 +66,41 @@ export default async function NewTicket() {
             <textarea
               className="w-full border-2 rounded-md px-2 mb-2 h-24 resize-none" 
               placeholder="Descreva o problema..."
+              name="description"
               required
             />
-          { customers.length !== 0 && (
-            <>
-              <label className="mb-1 font-medium text-lg">Selecione o membro</label>
-                <select
-                  className="w-full border-2 rounded-md px-2 mb-4 h-11 bg-gray-100" 
-                >
-                  { customers.map((customer) => (
-                    <option 
-                      key={customer.id} 
-                      value={customer.id}>
-                        {customer.name}
-                    </option>
-                  )) }
-                </select>  
-            </>
-          ) }
+            { customers.length !== 0 && (
+              <>
+                <label className="mb-1 font-medium text-lg">Selecione o membro</label>
+                  <select
+                    className="w-full border-2 rounded-md px-2 mb-4 h-11 bg-gray-100" 
+                    name="customerId"
+                  >
+                    { customers.map((customer) => (
+                      <option 
+                        key={customer.id} 
+                        value={customer.id}>
+                          {customer.name}
+                      </option>
+                    )) }
+                  </select>  
+              </>
+            ) }
 
-          { customers.length === 0 && (
-            <Link 
-              href="/dashboard/members/new"   
+            { customers.length === 0 && (
+              <Link 
+                href="/dashboard/members/new"   
+              >
+                Você ainda não tem nenhum membro cadastrado. <span className="text-blue-500 font-medium">Cadastrar Membro </span>
+              </Link>
+            ) }
+
+            <button 
+              className="bg-blue-500 text-gray-100 h-11 my-3 font-bold disabled:bg-gray-400 disabled:cursor-not-allowed"
+              disabled={ customers.length === 0 }
             >
-              Você ainda não tem nenhum membro cadastrado. <span className="text-blue-500 font-medium">Cadastrar Membro </span>
-            </Link>
-          ) }
-
-          <button 
-            className="bg-blue-500 text-gray-100 h-11 my-3 font-bold disabled:bg-gray-400 disabled:cursor-not-allowed"
-            disabled={ customers.length === 0 }
-          >
-            Cadastrar
-          </button>
+              Cadastrar
+            </button>
           </form >
       </main>
     </Container>

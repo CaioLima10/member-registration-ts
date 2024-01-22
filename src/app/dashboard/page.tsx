@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import ListMembers from "./components/listMembers";
+import prisma from "@/lib/prisma";
 
 
 export default async function Dashboard() {
@@ -14,6 +15,16 @@ export default async function Dashboard() {
   if(!session || !session.user){
     redirect("/")
   }
+
+  const members = await prisma.member.findMany({
+    where: {
+      userId: session.user.id,
+      status: "ABERTO"
+    },
+    include: {
+      customer: true,
+    }
+  })
 
   return (
     <Container>
@@ -36,10 +47,13 @@ export default async function Dashboard() {
           </thead>
 
           <tbody>
-            <ListMembers/>
-            <ListMembers/>
-            <ListMembers/>
-            <ListMembers/>
+            { members.map((item) => (
+            <ListMembers 
+              key={item.id}
+              memberCard={item.customer ? item.customer : null}
+              memberTicket={item}
+            />
+            )) }
           </tbody>
         </table>
 

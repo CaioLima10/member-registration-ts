@@ -12,6 +12,7 @@ export default async function Dashboard() {
 
   const session = await getServerSession(authOptions) 
 
+
   if(!session || !session.user){
     redirect("/")
   }
@@ -23,7 +24,11 @@ export default async function Dashboard() {
     },
     include: {
       customer: true,
+    },
+    orderBy: {
+      created_at: 'desc'
     }
+
   })
 
   return (
@@ -56,6 +61,9 @@ export default async function Dashboard() {
             )) }
           </tbody>
         </table>
+        { members.length === 0 && (
+          <h1 className="mt-5 text-gray-600">Nenhum ticket Membro foi encontrado...</h1>
+        ) }
       </main>
     </Container>
   )

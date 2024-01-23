@@ -1,6 +1,9 @@
-
+"use client"
+"use client"
+import { ModalContext } from "@/provider/modal";
 import { ICardMembersProps } from "@/utils/member.type";
 import { IMemberTicket } from "@/utils/memberTicket.type";
+import { useContext } from "react";
 import { FiFile, FiTrash2 } from "react-icons/fi";
 
 interface IListMemberProps {
@@ -9,7 +12,20 @@ interface IListMemberProps {
 }
 
 
-export default function ListMembers({ memberCard, memberTicket }: IListMemberProps) {
+export default  function ListMembers({ memberCard, memberTicket }: IListMemberProps) {
+
+    const {handleModalVisible, setDatailTicketMember } = useContext(ModalContext)
+
+
+
+    const handleOpenModal = () => {
+      handleModalVisible()
+      setDatailTicketMember({
+        customer: memberCard,
+        ticket: memberTicket
+      })
+    }
+
 
   return (
     
@@ -28,7 +44,9 @@ export default function ListMembers({ memberCard, memberTicket }: IListMemberPro
             <FiTrash2 size={22} className="text-red-500"/>
           </button>
           <button>
-            <FiFile size={22} className="text-green-500"/>
+            <FiFile size={22} className="text-green-500"
+              onClick={handleOpenModal}
+            />
           </button>
         </td>
       </tr> 

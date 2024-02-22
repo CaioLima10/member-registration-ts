@@ -1,20 +1,18 @@
-"use client"
+"use client";
 import Link from "next/link";
-import { FiLoader, FiLock, FiLogOut, FiUser} from "react-icons/fi"
-import { signIn , signOut , useSession } from "next-auth/react";
+import { FiLoader, FiLock, FiLogOut, FiUser } from "react-icons/fi";
+import { signIn, signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 
 export default function Header() {
-
-  const { status, data } = useSession()
-
-  console.log(data)
+  const { status, data } = useSession();
 
   const handleLogin = async () => {
-    await signIn()
-  }
+    await signIn();
+  };
   const handleLogout = async () => {
-    await signOut()
-  }
+    await signOut();
+  };
 
   return (
     <header className="w-full flex items-center px-4 h-20 py-4 bg-gray-950 text-gray-100">
@@ -26,34 +24,39 @@ export default function Header() {
           </h1>
         </Link>
 
-        { status === "loading" && (
+        {status === "loading" && (
           <button className="animate-spin">
-            <FiLoader size={22}/>
+            <FiLoader size={22} />
           </button>
-        ) }
+        )}
 
-        { status === "unauthenticated" && (
+        {status === "unauthenticated" && (
           <button onClick={handleLogin}>
-            <FiLock size={22}/>
+            <FiLock size={22} />
           </button>
-        ) }
+        )}
 
-        { status === "authenticated" && (
+        {status === "authenticated" && (
           <div className="flex items-center gap-4">
             <Link href="/dashboard">
-              <FiUser size={22}/>
+              <FiUser size={22} />
             </Link>
             <button className="text-red-500" onClick={handleLogout}>
-              <FiLogOut size={22}/>
+              <FiLogOut size={22} />
             </button>
             <div className="flex  items-center gap-3">
-              <p>{data.user.name}</p>
-              <img className="w-6 rounded-full" src={data.user?.image} alt="top"/>
+              <Image
+                title={data.user ? data.user.name ?? "" : ""}
+                width={28}
+                height={28}
+                className="rounded-full"
+                src={data.user ? data.user.image ?? "" : ""}
+                alt="top"
+              />
             </div>
           </div>
         )}
-
       </div>
     </header>
-  )
+  );
 }

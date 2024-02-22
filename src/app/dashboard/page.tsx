@@ -28,7 +28,6 @@ export default async function Dashboard() {
     orderBy: {
       created_at: 'desc'
     }
-
   })
 
   return (

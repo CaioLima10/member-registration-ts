@@ -1,8 +1,40 @@
 import { authOptions } from "@/lib/auth";
+import prisma from "@/lib/prisma";
 import prismaClient from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
+
+
+export async function GET(request: Request){
+  const { searchParams } = new URL(request.url)
+
+  const customerEmail = await searchParams.get("email")
+
+  console.log(customerEmail)
+
+  if(!customerEmail || customerEmail === ""){
+    return NextResponse.json({ error: "member not failed" }, { status: 400 })
+  }
+
+  try {
+    const customer = await prisma.customer.findFirst({
+      where: {
+        email: customerEmail,
+      },
+    });
+
+    if (!customer) {
+      return NextResponse.json({ error: "member not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(customer);
+
+  } catch (error) {
+    return NextResponse.json({error: "member not failed"}, { status: 400 })
+  }
+
+}
 
 export  async function DELETE( request: Request ){
 
@@ -76,5 +108,3 @@ export async function POST(request: Request){
       return NextResponse.json({ error: "failed created new member"}, { status: 400 })
     }
 }
-
-
